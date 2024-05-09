@@ -20,7 +20,7 @@ class Player(pygame.sprite.Sprite):
       self.images = []
       for i in os.listdir(r'.\images\bunbun\\'):
          img = pygame.image.load(os.path.join('images', 'bunbun\\'+i))
-         img = pygame.transform.scale(img, (32*SCALE,32*SCALE)).convert()
+         img = pygame.transform.scale(img, (img.get_width()*SCALE,img.get_height()*SCALE)).convert()
          img.convert_alpha()
          img.set_colorkey(ALPHA)
          self.images.append(img)
