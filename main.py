@@ -5,9 +5,10 @@ import os
 '''Variables'''
 ALPHA = (0,0,0)
 BACKGROUND = (218,155,155)
+SCALE = 2
 
-worldx = (240)
-worldy = (180)
+worldx = (240)*SCALE
+worldy = (180)*SCALE
 fps = 30
 
 '''Objects''' # Classes and functions
@@ -18,16 +19,17 @@ class Player(pygame.sprite.Sprite):
       self.speed = 2 # player speed
       self.images = []
       for i in os.listdir(r'.\images\bunbun\\'):
-         print(i,end=" ")
          img = pygame.image.load(os.path.join('images', 'bunbun\\'+i)).convert()
+         pygame.transform.scale(img,(SCALE,SCALE)) # Image doesn't get bigger
          img.convert_alpha()
          img.set_colorkey(ALPHA)
          self.images.append(img)
-         self.image = self.images[0]
-         self.rect = self.image.get_rect()
+      self.image = self.images[2]
+      self.rect = self.image.get_rect()
    def update(self):
       keys = pygame.key.get_pressed()
       h,v=(keys[pygame.K_d] - keys[pygame.K_a]),(keys[pygame.K_s] - keys[pygame.K_w])
+      self.hitbox = (self.rect.x + 15, self.rect.y + 17, 6, 6)
       self.rect.x += h * self.speed
       self.rect.y += v * self.speed
       if h<0: self.image=self.images[3]
