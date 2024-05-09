@@ -20,7 +20,6 @@ class Player(pygame.sprite.Sprite):
       self.images = []
       for i in os.listdir(r'.\images\bunbun\\'):
          img = pygame.image.load(os.path.join('images', 'bunbun\\'+i)).convert()
-         pygame.transform.scale(img,(SCALE,SCALE)) # Image doesn't get bigger
          img.convert_alpha()
          img.set_colorkey(ALPHA)
          self.images.append(img)
@@ -32,6 +31,7 @@ class Player(pygame.sprite.Sprite):
       self.hitbox = (self.rect.x + 15, self.rect.y + 17, 6, 6)
       self.rect.x += h * self.speed
       self.rect.y += v * self.speed
+      # Resize sprite by SCALE
       if h<0: self.image=self.images[3]
       elif h>0: self.image=self.images[4]
       elif v<0: self.image=self.images[5]
@@ -42,7 +42,7 @@ pygame.init()
 pygame.display.set_caption("Bunbun's Delivery")
 pygame.display.set_icon(pygame.image.load(r'.\images\favicon.ico'))
 world = pygame.display.set_mode([worldx, worldy])
-scaled_world = pygame.transform.scale(world,(2,2))
+
 
 clock = pygame.time.Clock() 
 
