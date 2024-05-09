@@ -16,10 +16,11 @@ class Player(pygame.sprite.Sprite):
    def __init__(self):
       pygame.sprite.Sprite.__init__(self)
       self.frame = 0 # count frames
-      self.speed = 2 # player speed
+      self.speed = 2*SCALE # player speed
       self.images = []
       for i in os.listdir(r'.\images\bunbun\\'):
-         img = pygame.image.load(os.path.join('images', 'bunbun\\'+i)).convert()
+         img = pygame.image.load(os.path.join('images', 'bunbun\\'+i))
+         img = pygame.transform.scale(img, (32*SCALE,32*SCALE)).convert()
          img.convert_alpha()
          img.set_colorkey(ALPHA)
          self.images.append(img)
@@ -31,6 +32,7 @@ class Player(pygame.sprite.Sprite):
       self.hitbox = (self.rect.x + 15, self.rect.y + 17, 6, 6)
       self.rect.x += h * self.speed
       self.rect.y += v * self.speed
+
       # Resize sprite by SCALE
       if h<0: self.image=self.images[3]
       elif h>0: self.image=self.images[4]
