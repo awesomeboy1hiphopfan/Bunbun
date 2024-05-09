@@ -42,8 +42,6 @@ pygame.init()
 pygame.display.set_caption("Bunbun's Delivery")
 pygame.display.set_icon(pygame.image.load(r'.\images\favicon.ico'))
 world = pygame.display.set_mode([worldx, worldy])
-
-
 clock = pygame.time.Clock() 
 
 #player
