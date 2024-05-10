@@ -1,32 +1,36 @@
 import pygame
 import sys
 import os
+from time import sleep
 
 '''Variables'''
 ALPHA = (0,0,0)
 BACKGROUND = (218,155,155)
-SCALE = 4
+SCALE = 2
 
 worldx = (240)*SCALE
 worldy = (180)*SCALE
 fps = 30
 
 '''Objects''' # Classes and functions
-def init_images(dir):
+def init_images(dir,folder=True):
    l1,l2=[],[]
-   for i in os.listdir(f'.\\images\\{dir}\\'): # Save every image into memory
-      img = pygame.image.load(os.path.join('images', f'{dir}\\{i}'))
-      img = pygame.transform.scale(img, (img.get_width()*SCALE,img.get_height()*SCALE)).convert()
-      img.convert_alpha()
-      img.set_colorkey(ALPHA)
-      l1.append(img)
-      l2.append(i)
+   truedir=f'.\\images\\{dir}\\' if folder else f'.\\images\\{dir}'
+   for i in os.listdir(truedir): # Save every image into memory
+      if os.path.exists(truedir+i):
+         img = pygame.image.load(truedir+i)
+         img = pygame.transform.scale(img, (img.get_width()*SCALE,img.get_height()*SCALE)).convert()
+         img.convert_alpha()
+         img.set_colorkey(ALPHA)
+         l1.append(img)
+         l2.append(i)
    return (l1,l2)
 class Player(pygame.sprite.Sprite):
    def __init__(self):
       pygame.sprite.Sprite.__init__(self)
       self.frame = 0 # count frames
       self.speed = 2*SCALE # player speed
+      self.last_shot = pygame.time.get_ticks()
       self.images,self.imageref = init_images("bunbun")[0],init_images("bunbun")[1]
       self.image = self.images[self.imageref.index("idle.png")]
       self.rect = self.image.get_rect()
@@ -42,7 +46,13 @@ class Player(pygame.sprite.Sprite):
    def update(self):
       keys = pygame.key.get_pressed()
       h,v=(keys[pygame.K_d] - keys[pygame.K_a]),(keys[pygame.K_s] - keys[pygame.K_w])
-      if keys[pygame.K_SPACE]: bullets.append(Bullet(self.rect.x+((31+(h*2))*SCALE),self.rect.y+((22+h+v)*SCALE)))
+      time_now = pygame.time.get_ticks()
+      if keys[pygame.K_SPACE] and time_now - self.last_shot > 60: 
+         bulletx=self.rect.x+((31+(h*2))*SCALE)
+         bullety=self.rect.y+((22+h+v)*SCALE)
+         bullets.append(Bullet(bulletx,bullety))
+         fx.append(Effect(bulletx,bullety,"fx\\pew",1,[20,20]))
+         self.last_shot = time_now
       self.hitbox = (self.rect.x + (15*SCALE), self.rect.y + (17*SCALE), 6*SCALE, 6*SCALE)
       self.rect.x += h * self.speed
       self.rect.y += v * self.speed
@@ -50,13 +60,22 @@ class Player(pygame.sprite.Sprite):
       self.collision(h,v)
 class Bullet(object):
    def __init__(self,x,y):
-      self.speed = 13
-      self.x = x
-      self.y = y
+      self.speed = 5*SCALE
+      self.x,self.y = x,y
       self.images,self.imageref=init_images("bullet")[0],init_images("bullet")[1]
    def update(self,world):
       self.image=self.images[0]
       world.blit(self.image,(self.x,self.y))
+class Effect(object):
+   def __init__(self,x,y,dir,len=0,speed=[]):
+      self.x,self.y,self.len,self.speed=x,y,len,speed
+      self.images=init_images(dir)[0]
+   def update(self,world):
+      for i in range(self.len):
+         self.image=self.images[i]
+         sleep(self.speed[i]/100)
+         world.blit(self.image,(self.x,self.y))
+      self.images.clear()
 '''Setup'''
 pygame.init()
 pygame.display.set_caption("BunBun's Delivery")
@@ -77,10 +96,13 @@ def draw_game():
    # pygame.draw.rect(world,(255,0,0),player.hitbox)
    for bullet in bullets:
       bullet.update(world)
+   for effect in fx:
+      effect.update(world)
    pygame.display.flip()
 
 '''Main Loop'''
 bullets=[]
+fx=[]
 while True: 
    clock.tick(fps)
    for event in pygame.event.get():
