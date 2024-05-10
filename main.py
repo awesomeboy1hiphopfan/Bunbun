@@ -5,7 +5,7 @@ import os
 '''Variables'''
 ALPHA = (0,0,0)
 BACKGROUND = (218,155,155)
-SCALE = 4
+SCALE = 3
 
 worldx = (240)*SCALE
 worldy = (180)*SCALE
@@ -30,18 +30,24 @@ class Player(pygame.sprite.Sprite):
       self.images,self.imageref = init_images("bunbun")[0],init_images("bunbun")[1]
       self.image = self.images[self.imageref.index("idle.png")]
       self.rect = self.image.get_rect()
-   def update(self):
-      keys = pygame.key.get_pressed()
-      h,v=(keys[pygame.K_d] - keys[pygame.K_a]),(keys[pygame.K_s] - keys[pygame.K_w])
-      if keys[pygame.K_SPACE]: bullets.append(Bullet(self.rect.x+(32*SCALE),self.rect.y+((22+v)*SCALE)))
-      self.hitbox = (self.rect.x + (15*SCALE), self.rect.y + (17*SCALE), 6*SCALE, 6*SCALE)
-      self.rect.x += h * self.speed
-      self.rect.y += v * self.speed
+   def set_frame(self,h,v):
       if h<0: self.image=self.images[self.imageref.index("left.png")]
       elif h>0: self.image=self.images[self.imageref.index("right.png")]
       elif v<0: self.image=self.images[self.imageref.index("up.png")]
       elif v>0: self.image=self.images[self.imageref.index("down.png")]
       else: self.image=self.images[self.imageref.index("idle.png")]
+   def collision(self,h,v):
+      if not (self.rect.left>=0 and self.rect.right<=worldx): self.rect.x -= h * self.speed
+      if not (self.rect.top>=0 and self.rect.bottom<=worldy): self.rect.y -= v * self.speed
+   def update(self):
+      keys = pygame.key.get_pressed()
+      h,v=(keys[pygame.K_d] - keys[pygame.K_a]),(keys[pygame.K_s] - keys[pygame.K_w])
+      if keys[pygame.K_SPACE]: bullets.append(Bullet(self.rect.x+((31+(h*2))*SCALE),self.rect.y+((22+h+v)*SCALE)))
+      self.hitbox = (self.rect.x + (15*SCALE), self.rect.y + (17*SCALE), 6*SCALE, 6*SCALE)
+      self.rect.x += h * self.speed
+      self.rect.y += v * self.speed
+      self.set_frame(h,v)
+      self.collision(h,v)
 class Bullet(object):
    def __init__(self,x,y):
       self.speed = 13
@@ -60,7 +66,7 @@ clock = pygame.time.Clock()
 
 #player
 player = Player()
-player.rect.x,player.rect.y = 0,0 # starting position
+player.rect.x,player.rect.y = (6)*SCALE,(6)*SCALE # starting position
 player_group = pygame.sprite.Group()
 player_group.add(player)
 
