@@ -5,7 +5,7 @@ import os
 '''Variables'''
 ALPHA = (0,0,0)
 BACKGROUND = (218,155,155)
-SCALE = 3
+SCALE = 4
 
 worldx = (240)*SCALE
 worldy = (180)*SCALE
@@ -37,8 +37,8 @@ class Player(pygame.sprite.Sprite):
       elif v>0: self.image=self.images[self.imageref.index("down.png")]
       else: self.image=self.images[self.imageref.index("idle.png")]
    def collision(self,h,v):
-      if not (self.rect.left>=0 and self.rect.right<=worldx): self.rect.x -= h * self.speed
-      if not (self.rect.top>=0 and self.rect.bottom<=worldy): self.rect.y -= v * self.speed
+      if not (self.rect.left>=0*SCALE and self.rect.right<=worldx): self.rect.x -= h * self.speed
+      if not (self.rect.top>=0*SCALE and self.rect.bottom<=worldy): self.rect.y -= v * self.speed
    def update(self):
       keys = pygame.key.get_pressed()
       h,v=(keys[pygame.K_d] - keys[pygame.K_a]),(keys[pygame.K_s] - keys[pygame.K_w])
