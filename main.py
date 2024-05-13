@@ -6,7 +6,7 @@ from time import sleep
 '''Variables'''
 ALPHA = (0,0,0)
 BACKGROUND = (218,155,155)
-SCALE = 2
+SCALE = 4  
 
 worldx = (240)*SCALE
 worldy = (180)*SCALE
@@ -51,7 +51,7 @@ class Player(pygame.sprite.Sprite):
          bulletx=self.rect.x+((31+(h*2))*SCALE)
          bullety=self.rect.y+((22+h+v)*SCALE)
          bullets.append(Bullet(bulletx,bullety))
-         fx.append(Effect(bulletx,bullety,"fx\\pew",1,[20,20]))
+         fx.append(Effect(bulletx,bullety,"fx\\pew",2))
          self.last_shot = time_now
       self.hitbox = (self.rect.x + (15*SCALE), self.rect.y + (17*SCALE), 6*SCALE, 6*SCALE)
       self.rect.x += h * self.speed
@@ -67,18 +67,18 @@ class Bullet(object):
       self.image=self.images[0]
       world.blit(self.image,(self.x,self.y))
 class Effect(object):
-   def __init__(self,x,y,dir,len=0,speed=[]):
-      self.x,self.y,self.len,self.speed=x,y,len,speed
+   def __init__(self,x,y,dir,len=0):
+      self.x,self.y,self.len=x,y,len
       self.images=init_images(dir)[0]
+      self.imageref=init_images(dir)[1]
    def update(self,world):
       for i in range(self.len):
          self.image=self.images[i]
-         sleep(self.speed[i]/100)
          world.blit(self.image,(self.x,self.y))
       self.images.clear()
 '''Setup'''
 pygame.init()
-pygame.display.set_caption("BunBun's Delivery")
+pygame.display.set_caption("BunBUn's Delivery")
 pygame.display.set_icon(pygame.image.load(r'.\images\favicon.ico'))
 world = pygame.display.set_mode([worldx, worldy])
 clock = pygame.time.Clock() 
@@ -94,10 +94,8 @@ def draw_game():
    player.update()
    player_group.draw(world)
    # pygame.draw.rect(world,(255,0,0),player.hitbox)
-   for bullet in bullets:
-      bullet.update(world)
-   for effect in fx:
-      effect.update(world)
+   for bullet in bullets: bullet.update(world)
+   for effect in fx: effect.update(world)
    pygame.display.flip()
 
 '''Main Loop'''
