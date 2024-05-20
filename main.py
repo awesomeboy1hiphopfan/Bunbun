@@ -6,7 +6,7 @@ from time import sleep
 '''Variables'''
 ALPHA = (0,0,0)
 BACKGROUND = (218,155,155)
-SCALE = 4  
+SCALE = 3  
 
 worldx = (240)*SCALE
 worldy = (180)*SCALE
@@ -49,7 +49,7 @@ class Player(pygame.sprite.Sprite):
       time_now = pygame.time.get_ticks()
       if keys[pygame.K_SPACE] and time_now - self.last_shot > 60: 
          bulletx=self.rect.x+((31+(h*2))*SCALE)
-         bullety=self.rect.y+((22+h+v)*SCALE)
+         bullety=self.rect.y+((22+h+v)*SCALE)-5
          bullets.append(Bullet(bulletx,bullety))
          fx.append(Effect(bulletx,bullety,"fx\\pew",2))
          self.last_shot = time_now
@@ -60,7 +60,7 @@ class Player(pygame.sprite.Sprite):
       self.collision(h,v)
 class Bullet(object):
    def __init__(self,x,y):
-      self.speed = 5*SCALE
+      self.speed = 1*SCALE
       self.x,self.y = x,y
       self.images,self.imageref=init_images("bullet")[0],init_images("bullet")[1]
    def update(self,world):
@@ -73,12 +73,11 @@ class Effect(object):
       self.imageref=init_images(dir)[1]
    def update(self,world):
       for i in range(self.len):
-         self.image=self.images[i]
-         world.blit(self.image,(self.x,self.y))
-      self.images.clear()
+         world.blit(self.images[i],(self.x,self.y))
+      fx.remove(fx[-1])
 '''Setup'''
 pygame.init()
-pygame.display.set_caption("BunBUn's Delivery")
+pygame.display.set_caption("BunBun's Delivery")
 pygame.display.set_icon(pygame.image.load(r'.\images\favicon.ico'))
 world = pygame.display.set_mode([worldx, worldy])
 clock = pygame.time.Clock() 
