@@ -1,15 +1,16 @@
 import pygame
 import sys
 import os
-from time import sleep
+
+def s(var): return var*SCALE
 
 '''Variables'''
 ALPHA = (0,0,0)
 BACKGROUND = (218,155,155)
 SCALE = 3  
 
-worldx = (240)*SCALE
-worldy = (180)*SCALE
+worldx = s(240)
+worldy = s(180)
 fps = 30
 
 '''Objects''' # Classes and functions
@@ -19,7 +20,7 @@ def init_images(dir,folder=True):
    for i in os.listdir(truedir): # Save every image into memory
       if os.path.exists(truedir+i):
          img = pygame.image.load(truedir+i)
-         img = pygame.transform.scale(img, (img.get_width()*SCALE,img.get_height()*SCALE)).convert()
+         img = pygame.transform.scale(img, (s(img.get_width()),s(img.get_height()))).convert()
          img.convert_alpha()
          img.set_colorkey(ALPHA)
          l1.append(img)
@@ -29,7 +30,7 @@ class Player(pygame.sprite.Sprite):
    def __init__(self):
       pygame.sprite.Sprite.__init__(self)
       self.frame = 0 # count frames
-      self.speed = 2*SCALE # player speed
+      self.speed = s(2) # player speed
       self.last_shot = pygame.time.get_ticks()
       self.images,self.imageref = init_images("bunbun")[0],init_images("bunbun")[1]
       self.image = self.images[self.imageref.index("idle.png")]
@@ -41,26 +42,26 @@ class Player(pygame.sprite.Sprite):
       elif v>0: self.image=self.images[self.imageref.index("down.png")]
       else: self.image=self.images[self.imageref.index("idle.png")]
    def collision(self,h,v):
-      if not (self.rect.left>=0*SCALE and self.rect.right<=worldx): self.rect.x -= h * self.speed
-      if not (self.rect.top>=0*SCALE and self.rect.bottom<=worldy): self.rect.y -= v * self.speed
+      if not (self.rect.left>=(0) and self.rect.right<=worldx): self.rect.x -= h * self.speed
+      if not (self.rect.top>=s(0) and self.rect.bottom<=worldy): self.rect.y -= v * self.speed
    def update(self):
       keys = pygame.key.get_pressed()
       h,v=(keys[pygame.K_d] - keys[pygame.K_a]),(keys[pygame.K_s] - keys[pygame.K_w])
       time_now = pygame.time.get_ticks()
       if keys[pygame.K_SPACE] and time_now - self.last_shot > 60: 
-         bulletx=self.rect.x+((31+(h*2))*SCALE)
-         bullety=self.rect.y+((22+h+v)*SCALE)-5
+         bulletx=self.rect.x+s(31+(h*2))
+         bullety=self.rect.y+s(22+h+v)
          bullets.append(Bullet(bulletx,bullety))
-         fx.append(Effect(bulletx,bullety,"fx\\pew",2))
+         fx.append(Effect(bulletx-s(1),bullety-s(2),"fx\\pew",2))
          self.last_shot = time_now
-      self.hitbox = (self.rect.x + (15*SCALE), self.rect.y + (17*SCALE), 6*SCALE, 6*SCALE)
+      self.hitbox = (self.rect.x + s(15), self.rect.y + s(17), s(6), s(6))
       self.rect.x += h * self.speed
       self.rect.y += v * self.speed
       self.set_frame(h,v)
       self.collision(h,v)
 class Bullet(object):
    def __init__(self,x,y):
-      self.speed = 1*SCALE
+      self.speed = s(5)
       self.x,self.y = x,y
       self.images,self.imageref=init_images("bullet")[0],init_images("bullet")[1]
    def update(self,world):
@@ -84,7 +85,7 @@ clock = pygame.time.Clock()
 
 #player
 player = Player()
-player.rect.x,player.rect.y = (6)*SCALE,(6)*SCALE # starting position
+player.rect.x,player.rect.y = s(6),s(6) # starting position
 player_group = pygame.sprite.Group()
 player_group.add(player)
 
@@ -106,7 +107,7 @@ while True:
       if event.type == pygame.QUIT: pygame.quit(); sys.exit()
    for bullet in bullets:
       if bullet.x < worldx and bullet.x > 0:
-         bullet.x += bullet.speed*SCALE
+         bullet.x += s(bullet.speed)
       else:
          bullets.pop(bullets.index(bullet))
    draw_game()
